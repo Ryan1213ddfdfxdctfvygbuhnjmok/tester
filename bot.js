@@ -642,7 +642,7 @@ client.on('message', message => {
         if(!message.channel.guild) return message.reply('**This Command Only For Servers**');
         if(!message.member.hasPermission('MANAGE_GUILD')) return message.channel.send('انت لاتمتلك صلاحيات' );
 if(!room) return message.channel.send('يرجى كتابة اسم الشات')
-if(!findroom) return message.channel.send('Cant Find This Channel')
+if(!findroom) return message.channel.send('لايمكنني ايجاد هذا الشات')
 let embed = new Discord.RichEmbed()
 .setTitle('تم انشاء شات الترحيب')
 .addField('الشات:', `${room}`)
@@ -684,7 +684,7 @@ client.on('message', message => {
  
     if(message.content.startsWith(prefix + "actdmwel")) {
         if(!message.channel.guild) return message.reply('**This Command Only For Servers**');
-        if(!message.member.hasPermission('MANAGE_GUILD')) return message.channel.send('**Sorry But You Dont Have Permission** `MANAGE_GUILD`' );
+        if(!message.member.hasPermission('MANAGE_GUILD')) return message.channel.send('لاتمتلك صلاحية منج سيرفر' );
         if(!welcome[message.guild.id]) welcome[message.guild.id] = {
           dm: 'Off'
         }
@@ -933,5 +933,75 @@ let embed = new Discord.RichEmbed()
 .setFooter(`${client.user.username}`)
 message.channel.sendEmbed(embed)
   }})
+
+const fs = require('fs')
+const reply = JSON.parse(fs.readFileSync('./replys.json' , 'utf8'));
+client.on('message', async message => {
+    let messageArray = message.content.split(" ");
+   if(message.content.startsWith(prefix + "setreplay")) {
+    let filter = m => m.author.id === message.author.id;
+    let thisMessage;
+    let thisFalse;
+ 
+    if(!message.member.hasPermission("MANAGE_GUILD")) return message.channel.send('لاتمتلك صلاحية منج سيرفر').then(msg => {
+       msg.delete(4500);
+       message.delete(4500);
+    });
+   
+    message.channel.send('يرجى كتابة الرسالى الان').then(msg => {
+ 
+        message.channel.awaitMessages(filter, {
+          max: 1,
+          time: 90000,
+          errors: ['time']
+        })
+        .then(collected => {
+            collected.first().delete();
+            thisMessage = collected.first().content;
+            let boi;
+            msg.edit('يرجى كتابة الرد الان').then(msg => {
+     
+                message.channel.awaitMessages(filter, {
+                  max: 1,
+                  time: 90000,
+                  errors: ['time']
+                })
+                .then(collected => {
+                    collected.first().delete();
+                    boi = collected.first().content;
+                    msg.edit('✅ **| تم الاعداد بنجاح...  **').then(msg => {
+       
+                      message.channel.awaitMessages(filter, {
+                        max: 1,
+                        time: 90000,
+                        errors: ['time']
+                      })
+                      let embed = new Discord.RichEmbed()
+                      .setTitle('تم اعداد رد تلقائي')
+                      .addField('الرسالة:', `${thisMessage}`)
+                      .addField('الرد:', `${boi}`)
+                      .setThumbnail(message.author.avatarURL)
+                      .setFooter(`${client.user.username}`)
+                     message.channel.sendEmbed(embed)
+    reply[message.guild.id] = {
+        msg: thisMessage,
+        reply: boi,
+    }
+    fs.writeFile("./replys.json", JSON.stringify(reply), (err) => {
+    if (err) console.error(err)
+  })
+   }
+            )
+        })
+    })
+})
+    })
+}})            
+client.on('message', async message => {
+   if(message.content === reply[message.guild.id].msg) {
+       message.channel.send(reply[message.guild.id].reply)
+   }}
+)
+
 
 client.login(process.env.BOT_TOKEN);
