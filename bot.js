@@ -689,7 +689,7 @@ client.on('message', message => {
           dm: 'Off'
         }
           if(welcome[message.guild.id].dm === 'Off') return [message.channel.send(`تم تفعيل الترحيب في الخاص`), welcome[message.guild.id].dm = 'On']
-          if(welcome[message.guild.id].dm === 'On') return [message.channel.send(`**The Welcome Dm Is 𝐎𝐅𝐅__ !**`), welcome[message.guild.id].dm = 'Off']
+          if(welcome[message.guild.id].dm === 'On') return [message.channel.send(`تم تعطيل الترحيب في الخاص`), welcome[message.guild.id].dm = 'Off']
           fs.writeFile("./welcome.json", JSON.stringify(welcome), (err) => {
             if (err) console.error(err)
             .catch(err => {
@@ -702,14 +702,14 @@ client.on('message', message => {
  
         client.on('message', message => {
  
-            if(message.content.startsWith(prefix + "toggleInvitedby")) {
+            if(message.content.startsWith(prefix + "actby")) {
                 if(!message.channel.guild) return message.reply('**This Command Only For Servers**');
-                if(!message.member.hasPermission('MANAGE_GUILD')) return message.channel.send('**Sorry But You Dont Have Permission** `MANAGE_GUILD`' );
+                if(!message.member.hasPermission('MANAGE_GUILD')) return message.channel.send('انت لاتمتلك صلاحية منج سيرفر' );
                 if(!welcome[message.guild.id]) welcome[message.guild.id] = {
                   by: 'Off'
                 }
-                  if(welcome[message.guild.id].by === 'Off') return [message.channel.send(`**تم تفعيل الترحيب __𝐎𝐍__ !**`), welcome[message.guild.id].by = 'On']
-                  if(welcome[message.guild.id].by === 'On') return [message.channel.send(`**The Invited By Is __𝐎𝐅𝐅__ !**`), welcome[message.guild.id].by = 'Off']
+                  if(welcome[message.guild.id].by === 'Off') return [message.channel.send(`تم تفعيل اظهار الداعي`), welcome[message.guild.id].by = 'On']
+                  if(welcome[message.guild.id].by === 'On') return [message.channel.send(`تم تعطيل اظهار الداعي`), welcome[message.guild.id].by = 'Off']
                   fs.writeFile("./welcome.json", JSON.stringify(welcome), (err) => {
                     if (err) console.error(err)
                     .catch(err => {
@@ -720,26 +720,7 @@ client.on('message', message => {
                  
                 })
                
- 
-client.on("guildMemberAdd", member => {
-            if(!welcome[member.guild.id]) welcome[member.guild.id] = {
-          onoff: 'Off'
-        }
-        if(welcome[member.guild.id].onoff === 'Off') return;
-    let welcomer = member.guild.channels.find('name', `${welcome[member.guild.id].channel}`)
-    let memberavatar = member.user.avatarURL
-      if (!welcomer) return;
-      if(welcomer) {
-         moment.locale('ar-ly');
-         var h = member.user;
-        let heroo = new Discord.RichEmbed()
-        .setColor('RANDOM')
-        .setThumbnail(h.avatarURL)
-        .setAuthor(h.username,h.avatarURL)
-        .addField(': تاريخ دخولك الدسكورد',`${moment(member.user.createdAt).format('D/M/YYYY h:mm a')} **\n** \`${moment(member.user.createdAt).fromNow()}\``,true)
-         .setFooter(`${h.tag}`,"https://images-ext-2.discordapp.net/external/JpyzxW2wMRG2874gSTdNTpC_q9AHl8x8V4SMmtRtlVk/https/orcid.org/sites/default/files/files/ID_symbol_B-W_128x128.gif")
-     welcomer.send({embed:heroo});
-      }})
+
  
  
 client.on('guildMemberAdd',async member => {
@@ -858,7 +839,7 @@ const pics = JSON.parse(fs.readFileSync('./pics.json' , 'utf8'));
   let findroom = message.guild.channels.find('name', `${room}`)
   if(message.content.startsWith(prefix + "setpic")) {
       if(!message.channel.guild) return message.reply('**This Command Only For Servers**');
-      if(!message.member.hasPermission('MANAGE_GUILD')) return message.channel.send('**Sorry But You Dont Have Permission** `MANAGE_GUILD`' );
+      if(!message.member.hasPermission('MANAGE_GUILD')) return message.channel.send('انت لاتمتلك صلاحية منج سيرفر`' );
       if(!room) return message.channel.send('Please Type The Channel Name')
       if(!findroom) return message.channel.send('Cant Find This Channel')
       let embed = new Discord.RichEmbed()
@@ -880,7 +861,7 @@ const pics = JSON.parse(fs.readFileSync('./pics.json' , 'utf8'));
        
 client.on('message', message => {
  
-  if(message.content.startsWith(prefix + "pic")) {
+  if(message.content.startsWith(prefix + "actpic")) {
           if (!message.channel.guild) return;
  
       if(!message.channel.guild) return message.reply('**This Command Only For Servers**');
@@ -943,11 +924,11 @@ client.on('message', message => {
   }
  })
 client.on('message', message => {
-  if(message.content.startsWith(prefix + "infoMedia")) {
+  if(message.content.startsWith(prefix + "infopic")) {
 let embed = new Discord.RichEmbed()
-.addField('Channel Status', `${pics[message.guild.id].onoff}`)
-.addField('Media Channel', `${pics[message.guild.id].channel}`)
-.addField('Requested By', `${message.author}`)
+.addField('مفعل او لا :', `${pics[message.guild.id].onoff}`)
+.addField('اسم شات الصور :', `${pics[message.guild.id].channel}`)
+.addField('الفاعل :', `${message.author}`)
 .setThumbnail(message.author.avatarURL)
 .setFooter(`${client.user.username}`)
 message.channel.sendEmbed(embed)
