@@ -1004,4 +1004,60 @@ client.on('message', async message => {
 )
 
 
+const sug = JSON.parse(fs.readFileSync('./sug.json' , 'utf8'));
+ // سوي ملف sug.json
+ // وحمل بكج fs npm i fs
+client.on('message', message => {
+           if (!message.channel.guild) return;
+ 
+    let room = message.content.split(" ").slice(1);
+    let findroom = message.guild.channels.find('name', `${room}`)
+    if(message.content.startsWith(prefix + "setsug")) {
+        if(!message.channel.guild) return message.reply('**This Command Only For Servers**');
+        if(!message.member.hasPermission('MANAGE_GUILD')) return message.channel.send('لاتمتلك صلاحية منج سيرفر' );
+if(!room) return message.channel.send('اكتب اسم الشات ')
+if(!findroom) return message.channel.send('لا استطيع ايجاد هذا الشات')
+let embed = new Discord.RichEmbed()
+.setTitle('تم اختيار شات الاقتراحات')
+.addField('الشات:', `${room}`)
+.addField('الفاعل:', `${message.author}`)
+.setThumbnail(message.author.avatarURL)
+.setFooter(`${client.user.username}`)
+message.channel.sendEmbed(embed)
+sug[message.guild.id] = {
+channel: room,
+}
+fs.writeFile("./sug.json", JSON.stringify(sug), (err) => {
+if (err) console.error(err)
+})
+   client.on('message', message => {
+ 
+ 
+    if(message.content.startsWith(`${prefix}اقتراح`)) {
+      if(!message.channel.guild) return message.reply('**This Command Only For Servers**');
+      let suggest = message.content.split(" ").slice(1);
+      if(!suggest) return message.reply(`يرجى كتابة الاقتراح`)
+    let findchannel = (message.guild.channels.find('name', `${sug[message.guild.id].channel}`))
+    if(!findchannel) return message.channel.send(`لم يتم اختيار شات الاقتراحات يرجى اختياره من خلال الامر : ${prefix}setsug`)
+    message.channel.send(`Done Your Suggest Will Be Seen By The Staffs`)
+    let sugembed = new Discord.RichEmbed()
+    .setTitle('Suggest By:', `${message.author}`)
+    .addField('Suggest:', `${suggest}`)
+    .setFooter('...')
+    findchannel.sendEmbed(sugembed)
+        .then(function (message) {
+          message.react('✅')
+          message.react('❌')
+        })
+        .catch(err => {
+            message.reply(`لم يتم اختيار شات الاقتراحات يرجى اختياره من خلال الامر : ${prefix}setsug`)
+            console.error(err);
+        });
+        }
+      })
+    }})
+
+
+
+
 client.login(process.env.BOT_TOKEN);
